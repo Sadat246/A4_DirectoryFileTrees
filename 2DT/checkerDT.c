@@ -17,6 +17,8 @@ boolean CheckerDT_Node_isValid(Node_T oNNode) {
    Node_T oNParent;
    Path_T oPNPath;
    Path_T oPPPath;
+   size_t nodeIndex;
+   Node_T oNNodeChild;
 
    /* Sample check: a NULL pointer is not a valid node */
    if(oNNode == NULL) {
@@ -36,6 +38,15 @@ boolean CheckerDT_Node_isValid(Node_T oNNode) {
          fprintf(stderr, "P-C nodes don't have P-C paths: (%s) (%s)\n",
                  Path_getPathname(oPPPath), Path_getPathname(oPNPath));
          return FALSE;
+      }
+   }
+   for(nodeIndex = 0; ulIndex < Node_getNumChildren(oNNode); nodeIndex++) {
+      oNNodeChild = NULL;
+      Node_getChild(oNNode, nodeIndex, &oNNodeChild);
+      if(Node_getParent(oNChild) != oNNode) {
+         fprintf(stderr, "Child's parent doesn't match parent node %s\n",
+                  Path_getPathname(Node_getPath(oNNodeChild)));
+            return FALSE;
       }
    }
 
