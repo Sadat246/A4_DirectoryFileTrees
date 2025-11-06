@@ -19,6 +19,9 @@ boolean CheckerDT_Node_isValid(Node_T oNNode) {
    Path_T oPPPath;
    size_t nodeIndex;
    Node_T oNNodeChild;
+   int found;
+   size_t nodeIndex2;
+   Node_T temp1;
 
    /* Sample check: a NULL pointer is not a valid node */
    if(oNNode == NULL) {
@@ -40,6 +43,7 @@ boolean CheckerDT_Node_isValid(Node_T oNNode) {
          return FALSE;
       }
    }
+   /* checks to see if node's children's parents is node with getChild and getParent*/
    for(nodeIndex = 0; nodeIndex < Node_getNumChildren(oNNode); nodeIndex++) {
       oNNodeChild = NULL;
       Node_getChild(oNNode, nodeIndex, &oNNodeChild);
@@ -47,6 +51,19 @@ boolean CheckerDT_Node_isValid(Node_T oNNode) {
          fprintf(stderr, "Child's parent doesn't match parent node %s\n",
                   Path_getPathname(Node_getPath(oNNodeChild)));
             return FALSE;
+      }
+   }
+   /* checks to see if parent the node is contained in oNParent's children*/
+   if(oNParent != NULL) {
+      found = 0;
+      for(nodeIndex2 = 0; nodeIndex2 < Node_getNumChildren(oNParent); nodeIndex2++) {
+         temp1 = NULL;
+         Node_getChild(oNParent, nodeIndex2, &temp1);
+         if(temp1 == oNNode) found = TRUE;
+      }
+      if(!found) {
+         fprintf(stderr, "Parent does not contain child in its group of children\n");
+         return FALSE;
       }
    }
 
