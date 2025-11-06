@@ -40,10 +40,10 @@ boolean CheckerDT_Node_isValid(Node_T oNNode) {
          return FALSE;
       }
    }
-   for(nodeIndex = 0; ulIndex < Node_getNumChildren(oNNode); nodeIndex++) {
+   for(nodeIndex = 0; nodeIndex < Node_getNumChildren(oNNode); nodeIndex++) {
       oNNodeChild = NULL;
       Node_getChild(oNNode, nodeIndex, &oNNodeChild);
-      if(Node_getParent(oNChild) != oNNode) {
+      if(Node_getParent(onNodeChild) != oNNode) {
          fprintf(stderr, "Child's parent doesn't match parent node %s\n",
                   Path_getPathname(Node_getPath(oNNodeChild)));
             return FALSE;
