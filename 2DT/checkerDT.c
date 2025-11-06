@@ -123,10 +123,25 @@ static boolean CheckerDT_treeCheck(Node_T oNNode) {
    }
    return TRUE;
 }
+/* helper function to count nodes */
+static size_t countNodes(Node_T oNNode) {
+   size_t count;
+   size_t i;
+   Node_T child;
+   if(oNNode == NULL) return 0;
+   count = 1;
+   for(i = 0; i < Node_getNumChildren(oNNode); i++) {
+      child = NULL;
+      Node_getChild(oNNode, i, &child);
+      count += countNodes(child);
+   }
+   return count;
+}
 
 /* see checkerDT.h for specification */
 boolean CheckerDT_isValid(boolean bIsInitialized, Node_T oNRoot,
                           size_t ulCount) {
+   size_t nodeCount;
 
    /* Sample check on a top-level data structure invariant:
       if the DT is not initialized, its count should be 0. */
@@ -135,6 +150,26 @@ boolean CheckerDT_isValid(boolean bIsInitialized, Node_T oNRoot,
          fprintf(stderr, "Not initialized, but count is not 0\n");
          return FALSE;
       }
+   /* if root is null, so should its parent*/
+   if(oNRoot != NULL && Node_getParent(oNRoot) != NULL) {
+      fprintf(stderr, "Root of tree has a non-NULL parent\n");
+      return FALSE;
+   }
+   /* similar to previous check but checks if root is null, when count should be 0*/
+   if(oNRoot == NULL && ulCount != 0) {
+      fprintf(stderr, "Root is NULL but size of tree is non-zero\n");
+      return FALSE;
+   }
+
+   if(oNRoot != NULL) {
+      nodeCount = countNodes(oNRoot);
+      if(nodeCount != ulCount) {
+         fprintf(stderr, "Node count mismatch: we tracked %zu, but there are %zu\n",
+                 ulCount, nodeCount);
+         return FALSE;
+      }
+   }
+
 
    /* Now checks invariants recursively at each node from the root. */
    return CheckerDT_treeCheck(oNRoot);
