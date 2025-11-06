@@ -43,7 +43,7 @@ boolean CheckerDT_Node_isValid(Node_T oNNode) {
    for(nodeIndex = 0; nodeIndex < Node_getNumChildren(oNNode); nodeIndex++) {
       oNNodeChild = NULL;
       Node_getChild(oNNode, nodeIndex, &oNNodeChild);
-      if(Node_getParent(onNodeChild) != oNNode) {
+      if(Node_getParent(oNNodeChild) != oNNode) {
          fprintf(stderr, "Child's parent doesn't match parent node %s\n",
                   Path_getPathname(Node_getPath(oNNodeChild)));
             return FALSE;
