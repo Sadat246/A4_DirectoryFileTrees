@@ -22,6 +22,9 @@ boolean CheckerDT_Node_isValid(Node_T oNNode) {
    int found;
    size_t nodeIndex2;
    Node_T temp1;
+   size_t nodeIndex3;
+   Node_T prevNode;
+   Node_T currNode;
 
    /* Sample check: a NULL pointer is not a valid node */
    if(oNNode == NULL) {
@@ -63,6 +66,18 @@ boolean CheckerDT_Node_isValid(Node_T oNNode) {
       }
       if(!found) {
          fprintf(stderr, "Parent does not contain child in its group of children\n");
+         return FALSE;
+      }
+   }
+   /* checks to see if children are in lexicographical order */
+   for(nodeIndex3 = 1; nodeIndex3 < Node_getNumChildren(oNNode); nodeIndex3++) {
+      prevNode = NULL, currNode = NULL;
+      Node_getChild(oNNode, nodeIndex3-1, &prevNode);
+      Node_getChild(oNNode, nodeIndex3, &currNode);
+      if(Path_comparePath(Node_getPath(prevNode), Node_getPath(currNode)) >= 0) {
+         fprintf(stderr, "Node's children are out of lexicographic order: %s >= %s\n",
+                 Path_getPathname(Node_getPath(prevNode)),
+                 Path_getPathname(Node_getPath(currNode)));
          return FALSE;
       }
    }
