@@ -164,8 +164,7 @@ boolean CheckerDT_isValid(boolean bIsInitialized, Node_T oNRoot,
    if(oNRoot != NULL) {
       nodeCount = countNodes(oNRoot);
       if(nodeCount != ulCount) {
-         fprintf(stderr, "Node count mismatch: we tracked %s, but there are %s\n",
-                 ulCount, nodeCount);
+         fprintf(stderr, "Node count mismatch");
          return FALSE;
       }
    }
