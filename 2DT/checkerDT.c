@@ -22,9 +22,7 @@ boolean CheckerDT_Node_isValid(Node_T oNNode) {
    int found;
    size_t nodeIndex2;
    Node_T temp1;
-   size_t nodeIndex3;
-   Node_T prevNode;
-   Node_T currNode;
+   size_t depth;
 
    /* Sample check: a NULL pointer is not a valid node */
    if(oNNode == NULL) {
@@ -37,6 +35,10 @@ boolean CheckerDT_Node_isValid(Node_T oNNode) {
    oNParent = Node_getParent(oNNode);
    if(oNParent != NULL) {
       oPNPath = Node_getPath(oNNode);
+      if (onPath == NULL) {
+         fprintf(stderr,"A node has a NULL path"); /* there should be no null path*/
+         return FALSE;
+      }
       oPPPath = Node_getPath(oNParent);
 
       if(Path_getSharedPrefixDepth(oPNPath, oPPPath) !=
@@ -69,19 +71,17 @@ boolean CheckerDT_Node_isValid(Node_T oNNode) {
          return FALSE;
       }
    }
-   /* checks to see if children are in lexicographical order */
-   for(nodeIndex3 = 1; nodeIndex3 < Node_getNumChildren(oNNode); nodeIndex3++) {
-      prevNode = NULL, currNode = NULL;
-      Node_getChild(oNNode, nodeIndex3-1, &prevNode);
-      Node_getChild(oNNode, nodeIndex3, &currNode);
-      if(Path_comparePath(Node_getPath(prevNode), Node_getPath(currNode)) >= 0) {
-         fprintf(stderr, "Node's children are out of lexicographic order: %s >= %s\n",
-                 Path_getPathname(Node_getPath(prevNode)),
-                 Path_getPathname(Node_getPath(currNode)));
-         return FALSE;
-      }
+   /* if not the root, it should contain parent */
+   if (depth != 1 && onParent == NULL) {
+      fprintf(stderr, "Non root does not contain parent\n");
+      return FALSE;
    }
-
+   /* root should not contain parent */
+   if (depth == 1 && onParent != NULL) {
+      fprintf(stderr, "Root contains parent\n");
+      return FALSE;
+   }
+   
    return TRUE;
 }
 
@@ -95,7 +95,10 @@ boolean CheckerDT_Node_isValid(Node_T oNNode) {
    If you do, you should update this function comment.
 */
 static boolean CheckerDT_treeCheck(Node_T oNNode) {
-   size_t ulIndex;
+   size_t ulIndex, ulIndex2, ulIndex3,ulIndex4;
+   Node_T childPrev;
+   Node_T childCurr;
+   assert(pNodeCount != NULL);
 
    if(oNNode!= NULL) {
 
@@ -103,7 +106,35 @@ static boolean CheckerDT_treeCheck(Node_T oNNode) {
       /* If not, pass that failure back up immediately */
       if(!CheckerDT_Node_isValid(oNNode))
          return FALSE;
-
+      /* check node's children are in lexicographic order*/
+      for(ulIndex2 = 1; ulIndex2 < Node_getNumChildren(oNNode); ulIndex2++){
+         childPrev= NULL;
+         childCurr= NULL;
+         Node_getChild(oNNode, ulIndex2-1, &childPrev); 
+         Node_getChild(oNNode, ulIndex, &childCurr);
+         if (childPrev != NULL && childCurr != NULL &&
+             Path_comparePath(Node_getPath(childPrev), 
+                              Node_getPath(childCurr)) > 0) {
+            fprintf(stderr, "Node's children aren't in lexicographic order\n");
+            return FALSE;
+         }
+      }
+         /* checks for duplicates */
+      for(ulIndex3 = 0; ulIndex3 < Node_getNumChildren(oNNode); ulIndex3++){
+         for(ulIndex4 = ulIndex3+1; ulIndex4 < Node_getNumChildren(oNNode); ulIndex4++){
+            childPrev= NULL;
+            childCurr= NULL;
+            Node_getChild(oNNode, ulIndex3, &childPrev); 
+            Node_getChild(oNNode, ulIndex4, &childCurr);
+            if (childPrev != NULL && childCurr != NULL &&
+               Path_comparePath(Node_getPath(childPrev),
+                                 Node_getPath(oNChild2)) == 0)
+            {
+               fprintf(stderr, "Node has duplicate children\n");
+               return FALSE;
+            }
+      }
+      }
       /* Recur on every child of oNNode */
       for(ulIndex = 0; ulIndex < Node_getNumChildren(oNNode); ulIndex++)
       {
@@ -120,22 +151,9 @@ static boolean CheckerDT_treeCheck(Node_T oNNode) {
          if(!CheckerDT_treeCheck(oNChild))
             return FALSE;
       }
+
    }
    return TRUE;
-}
-/* helper function to count nodes */
-static size_t countNodes(Node_T oNNode) {
-   size_t count;
-   size_t i;
-   Node_T child;
-   if(oNNode == NULL) return 0;
-   count = 1;
-   for(i = 0; i < Node_getNumChildren(oNNode); i++) {
-      child = NULL;
-      Node_getChild(oNNode, i, &child);
-      count += countNodes(child);
-   }
-   return count;
 }
 
 /* see checkerDT.h for specification */
@@ -161,15 +179,15 @@ boolean CheckerDT_isValid(boolean bIsInitialized, Node_T oNRoot,
       return FALSE;
    }
 
-   if(oNRoot != NULL) {
-      nodeCount = countNodes(oNRoot);
-      if(nodeCount != ulCount) {
-         fprintf(stderr, "Node count mismatch");
-         return FALSE;
-      }
+
+   if (!CheckerDT_treeCheck(oNRoot)){
+      return FALSE;
    }
-
-
    /* Now checks invariants recursively at each node from the root. */
    return CheckerDT_treeCheck(oNRoot);
+   if (nodeCount != ulCount) {
+      fprintf(stderr,"Node count is not equal to ulCount\n")
+      return FALSE;
+   }
+   return TRUE;
 }
