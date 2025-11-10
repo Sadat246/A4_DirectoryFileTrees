@@ -29,18 +29,18 @@ boolean CheckerDT_Node_isValid(Node_T oNNode) {
       fprintf(stderr, "A node is a NULL pointer\n");
       return FALSE;
    }
+   oPNPath = Node_getPath(oNNode);
+   if (oPNPath == NULL) {
+      fprintf(stderr,"A node has a NULL path"); /* there should be no null path*/
+      return FALSE;
+   }
+   depth = Path_getDepth(oPNPath);
 
    /* Sample check: parent's path must be the longest possible
       proper prefix of the node's path */
    oNParent = Node_getParent(oNNode);
    if(oNParent != NULL) {
-      oPNPath = Node_getPath(oNNode);
-      if (oPNPath == NULL) {
-         fprintf(stderr,"A node has a NULL path"); /* there should be no null path*/
-         return FALSE;
-      }
       oPPPath = Node_getPath(oNParent);
-      depth = Path_getDepth(oPNPath);
 
       if(Path_getSharedPrefixDepth(oPNPath, oPPPath) !=
          Path_getDepth(oPNPath) - 1) {
