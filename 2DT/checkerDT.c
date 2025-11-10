@@ -72,6 +72,11 @@ boolean CheckerDT_Node_isValid(Node_T oNNode) {
          return FALSE;
       }
    }
+   /* Path of root shouldn't contain a backward slash */
+   if (strchr(Path_getPathname(oPNPath), '/') && ulDepth == 1) {
+      fprintf(stderr, "The path of the root contains backward slash. \n");
+      return FALSE;
+   }
    /* if not the root, it should contain parent */
    if (depth > 1 && oNParent == NULL) {
       fprintf(stderr, "Non root does not contain parent\n");
@@ -82,7 +87,6 @@ boolean CheckerDT_Node_isValid(Node_T oNNode) {
       fprintf(stderr, "Root contains parent\n");
       return FALSE;
    }
-   
    return TRUE;
 }
 
