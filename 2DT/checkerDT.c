@@ -40,6 +40,7 @@ boolean CheckerDT_Node_isValid(Node_T oNNode) {
          return FALSE;
       }
       oPPPath = Node_getPath(oNParent);
+      Path_getDepth(oPNPath);
 
       if(Path_getSharedPrefixDepth(oPNPath, oPPPath) !=
          Path_getDepth(oPNPath) - 1) {
@@ -110,7 +111,7 @@ static boolean CheckerDT_treeCheck(Node_T oNNode) {
          childPrev= NULL;
          childCurr= NULL;
          Node_getChild(oNNode, ulIndex2-1, &childPrev); 
-         Node_getChild(oNNode, ulIndex, &childCurr);
+         Node_getChild(oNNode, ulIndex2, &childCurr);
          if (childPrev != NULL && childCurr != NULL &&
              Path_comparePath(Node_getPath(childPrev), 
                               Node_getPath(childCurr)) > 0) {
