@@ -73,7 +73,7 @@ boolean CheckerDT_Node_isValid(Node_T oNNode) {
       }
    }
    /* if not the root, it should contain parent */
-   if (depth != 1 && oNParent == NULL) {
+   if (depth > 1 && oNParent == NULL) {
       fprintf(stderr, "Non root does not contain parent\n");
       return FALSE;
    }
