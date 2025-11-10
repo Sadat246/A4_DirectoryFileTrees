@@ -35,7 +35,7 @@ boolean CheckerDT_Node_isValid(Node_T oNNode) {
    oNParent = Node_getParent(oNNode);
    if(oNParent != NULL) {
       oPNPath = Node_getPath(oNNode);
-      if (onPath == NULL) {
+      if (oPNPath == NULL) {
          fprintf(stderr,"A node has a NULL path"); /* there should be no null path*/
          return FALSE;
       }
@@ -72,7 +72,7 @@ boolean CheckerDT_Node_isValid(Node_T oNNode) {
       }
    }
    /* if not the root, it should contain parent */
-   if (depth != 1 && onParent == NULL) {
+   if (depth != 1 && oNParent == NULL) {
       fprintf(stderr, "Non root does not contain parent\n");
       return FALSE;
    }
@@ -98,7 +98,6 @@ static boolean CheckerDT_treeCheck(Node_T oNNode) {
    size_t ulIndex, ulIndex2, ulIndex3,ulIndex4;
    Node_T childPrev;
    Node_T childCurr;
-   assert(pNodeCount != NULL);
 
    if(oNNode!= NULL) {
 
@@ -128,7 +127,7 @@ static boolean CheckerDT_treeCheck(Node_T oNNode) {
             Node_getChild(oNNode, ulIndex4, &childCurr);
             if (childPrev != NULL && childCurr != NULL &&
                Path_comparePath(Node_getPath(childPrev),
-                                 Node_getPath(oNChild2)) == 0)
+                                 Node_getPath(childCurr)) == 0)
             {
                fprintf(stderr, "Node has duplicate children\n");
                return FALSE;
@@ -186,7 +185,7 @@ boolean CheckerDT_isValid(boolean bIsInitialized, Node_T oNRoot,
    /* Now checks invariants recursively at each node from the root. */
    return CheckerDT_treeCheck(oNRoot);
    if (nodeCount != ulCount) {
-      fprintf(stderr,"Node count is not equal to ulCount\n")
+      fprintf(stderr,"Node count is not equal to ulCount\n");
       return FALSE;
    }
    return TRUE;
