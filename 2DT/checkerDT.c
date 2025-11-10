@@ -40,7 +40,7 @@ boolean CheckerDT_Node_isValid(Node_T oNNode) {
          return FALSE;
       }
       oPPPath = Node_getPath(oNParent);
-      Path_getDepth(oPNPath);
+      depth = Path_getDepth(oPNPath);
 
       if(Path_getSharedPrefixDepth(oPNPath, oPPPath) !=
          Path_getDepth(oPNPath) - 1) {
