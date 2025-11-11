@@ -187,11 +187,11 @@ boolean CheckerDT_isValid(boolean bIsInitialized, Node_T oNRoot,
    }
 
 
-   if (!CheckerDT_treeCheck(oNRoot)){
+   if (!CheckerDT_treeCheck(oNRoot, &nodeCount)){
       return FALSE;
    }
    /* Now checks invariants recursively at each node from the root. */
-   return CheckerDT_treeCheck(oNRoot);
+   return CheckerDT_treeCheck(oNRoot, &nodeCount);
    if (nodeCount != ulCount) {
       fprintf(stderr,"Node count is not equal to ulCount\n");
       return FALSE;
