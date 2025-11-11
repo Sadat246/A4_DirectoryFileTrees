@@ -105,7 +105,6 @@ static boolean CheckerDT_treeCheck(Node_T oNNode) {
    Node_T childPrev;
    Node_T childCurr;
 
-   assert(pNodeCount != NULL);
    if(oNNode != NULL) {
       (*pNodeCount)++;
 
