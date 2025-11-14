@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------*/
 /* ft.h                                                               */
-/* Author: Christopher Moretti and Vikash Modi '23                    */
+/* Author: Aditya Prajapati and Sadat Ahmed                           */
 /*--------------------------------------------------------------------*/
 
 #ifndef FT_INCLUDED
