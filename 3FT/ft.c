@@ -463,7 +463,7 @@ int FT_init(void) {
    oNRoot =  NULL;
    ulCount = 0;
    assert(CheckerFT_isValid(bIsInitialized, oNRoot, ulCount));
-   return SUCESS;
+   return SUCCESS;
 }
 
 
@@ -477,7 +477,7 @@ int FT_destroy(void) {
    }
    oNRoot = NULL;
    bIsInitialized = FALSE;
-   return SUCESS;
+   return SUCCESS;
 }
 /* --------------------------------------------------------------------
 
