@@ -34,6 +34,7 @@ struct node {
 */
 static int Node_addChild(Node_T oNParent, Node_T oNChild,
                          size_t ulIndex) {
+   assert(!oNParent->isFile);
    assert(oNParent != NULL);
    assert(oNChild != NULL);
 
@@ -98,6 +99,12 @@ int Node_new(Path_T oPPath, Node_T oNParent, Node_T *poNResult) {
          free(psNew);
          *poNResult = NULL;
          return CONFLICTING_PATH;
+      }
+      if (oNParent->isFile) {
+         Path_free(psNew->oPPath);
+         free(psNew);
+         *poNResult = NULL;
+         return NOT_A_DIRECTORY;
       }
 
       /* parent must be exactly one level up from child */
@@ -175,11 +182,12 @@ size_t Node_free(Node_T oNNode) {
    }
 
    /* recursively remove children */
-   while(DynArray_getLength(oNNode->oDChildren) != 0) {
-      ulCount += Node_free(DynArray_get(oNNode->oDChildren, 0));
+   if (!oNNode->isFile && oNNode->oDChildren != NULL) {
+      while(DynArray_getLength(oNNode->oDChildren) != 0) {
+         ulCount += Node_free(DynArray_get(oNNode->oDChildren, 0));
+      }
+      DynArray_free(oNNode->oDChildren);
    }
-   DynArray_free(oNNode->oDChildren);
-
    /* remove path */
    Path_free(oNNode->oPPath);
 
@@ -209,6 +217,7 @@ boolean Node_hasChild(Node_T oNParent, Path_T oPPath,
 
 size_t Node_getNumChildren(Node_T oNParent) {
    assert(oNParent != NULL);
+   assert(!oNParent->isFile);
 
    return DynArray_getLength(oNParent->oDChildren);
 }
@@ -218,6 +227,7 @@ int  Node_getChild(Node_T oNParent, size_t ulChildID,
 
    assert(oNParent != NULL);
    assert(poNResult != NULL);
+   assert(!oNParent->isFile);
 
    /* ulChildID is the index into oNParent->oDChildren */
    if(ulChildID >= Node_getNumChildren(oNParent)) {

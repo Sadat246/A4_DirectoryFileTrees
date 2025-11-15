@@ -26,6 +26,7 @@
    * ALREADY_IN_TREE if pcPath is already in the FT (as dir or file)
    * MEMORY_ERROR if memory could not be allocated to complete request
 */
+
 int FT_insertDir(const char *pcPath);
 
 /*

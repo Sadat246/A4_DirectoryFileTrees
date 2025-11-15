@@ -155,7 +155,7 @@ static int FT_findNode(const char *pcPath, Node_T *poNResult) {
 }
 
 int FT_insertDir(const char *pcPath) {
-    int iStatus;
+   int iStatus;
    Path_T oPPath = NULL;
    Node_T oNFirstNew = NULL;
    Node_T oNCurr = NULL;
@@ -248,17 +248,17 @@ int FT_insertDir(const char *pcPath) {
 }
 
 boolean FT_containsDir(const char *pcPath) {
-    int iStatus;
+   int iStatus;
    Node_T oNFound = NULL;
 
    assert(pcPath != NULL);
 
    iStatus = FT_findNode(pcPath, &oNFound);
-   return (boolean) (iStatus == SUCCESS && Node_isFile(oNFound));
+   return (boolean) (iStatus == SUCCESS && !Node_isFile(oNFound));
 }
 
 int FT_rmDir(const char *pcPath) {
-    int iStatus;
+   int iStatus;
    Node_T oNFound = NULL;
 
    assert(pcPath != NULL);
@@ -282,38 +282,217 @@ int FT_rmDir(const char *pcPath) {
 
 int FT_insertFile(const char *pcPath, void *pvContents,
                   size_t ulLength) {
-    
+   int iStatus;
+   Path_T oPPath = NULL;
+   Node_T oNFirstNew = NULL;
+   Node_T oNCurr = NULL;
+   size_t ulDepth, ulIndex;
+   size_t ulNewNodes = 0;
+
+   assert(pcPath != NULL);
+   assert(CheckerDT_isValid(bIsInitialized, oNRoot, ulCount));
+
+   /* validate pcPath and generate a Path_T for it */
+   if(!bIsInitialized)
+      return INITIALIZATION_ERROR;
+
+   iStatus = Path_new(pcPath, &oPPath);
+   if(iStatus != SUCCESS)
+      return iStatus;
+
+   /* find the closest ancestor of oPPath already in the tree */
+   iStatus= FT_traversePath(oPPath, &oNCurr);
+   if(iStatus != SUCCESS) {
+      Path_free(oPPath);
+      return iStatus;
+   }
+
+   /* no ancestor node found, so if root is not NULL,
+      pcPath isn't underneath root. */
+   if(oNCurr == NULL && oNRoot != NULL || oNCurr == NULL) {
+      Path_free(oPPath);
+      return CONFLICTING_PATH;
+   }
+
+   ulDepth = Path_getDepth(oPPath);
+   ulIndex = Path_getDepth(Node_getPath(oNCurr))+1;
+
+   /* oNCurr is the node we're trying to insert */
+   if(ulIndex == ulDepth+1 && !Path_comparePath(oPPath,
+                                    Node_getPath(oNCurr))) {
+      Path_free(oPPath); /* Clean up path object as it's no longer needed */
+      return ALREADY_IN_TREE;
+   }
+
+   /* starting at oNCurr, build rest of the path one level at a time */
+   while(ulIndex <= ulDepth) {
+      Path_T oPPrefix = NULL;
+      Node_T oNNewNode = NULL;
+
+      /* generate a Path_T for this level */
+      iStatus = Path_prefix(oPPath, ulIndex, &oPPrefix);
+      if(iStatus != SUCCESS) {
+         Path_free(oPPath);
+         if(oNFirstNew != NULL)
+            (void) Node_free(oNFirstNew);
+         assert(CheckerDT_isValid(bIsInitialized, oNRoot, ulCount));
+         return iStatus;
+      }
+
+      /* insert the new node for this level */
+      iStatus = Node_new(oPPrefix, oNCurr, &oNNewNode, TRUE, pvContents, ulLength);
+      if(iStatus != SUCCESS) {
+         Path_free(oPPath);
+         Path_free(oPPrefix);
+         if(oNFirstNew != NULL)
+            (void) Node_free(oNFirstNew);
+         assert(CheckerDT_isValid(bIsInitialized, oNRoot, ulCount));
+         return iStatus;
+      }
+
+      /* set up for next level */
+      Path_free(oPPrefix);
+      oNCurr = oNNewNode;
+      ulNewNodes++;
+      if(oNFirstNew == NULL)
+         oNFirstNew = oNCurr;
+      ulIndex++;
+   }
+
+   Path_free(oPPath);
+   /* update DT state variables to reflect insertion */
+   if(oNRoot == NULL)
+      oNRoot = oNFirstNew;
+   ulCount += ulNewNodes;
+
+   assert(CheckerDT_isValid(bIsInitialized, oNRoot, ulCount));
+   return SUCCESS;
 }
 
 boolean FT_containsFile(const char *pcPath) {
+   int iStatus;
+   Node_T oNFound = NULL;
 
+   assert(pcPath != NULL);
+
+   iStatus = FT_findNode(pcPath, &oNFound);
+   return (boolean) (iStatus == SUCCESS && Node_isFile(oNFound));
 }
 
 int FT_rmFile(const char *pcPath) {
+   int iStatus;
+   Node_T oNFound = NULL;
 
+   assert(pcPath != NULL);
+   assert(CheckerDT_isValid(bIsInitialized, oNRoot, ulCount));
+
+   iStatus = DT_findNode(pcPath, &oNFound);
+
+   if(iStatus != SUCCESS) return iStatus;
+
+   if (!Node_isFile(oNFound)) {
+    return NOT_A_FILE;
+   }
+
+   ulCount -= Node_free(oNFound);
+   if(ulCount == 0)
+      oNRoot = NULL;
+
+   assert(CheckerDT_isValid(bIsInitialized, oNRoot, ulCount));
+   return SUCCESS;
 }
 
 void *FT_getFileContents(const char *pcPath) {
+   int iStatus;
+   Node_T oNFound = NULL;
 
+   assert(pcPath != NULL);
+
+   iStatus = FT_findNode(pcPath, &oNFound);
+   if (iStatus != SUCCESS)
+   {
+      return NULL;
+   }
+   return Node_getContents(oNFound);
 }
 
 void *FT_replaceFileContents(const char *pcPath, void *pvNewContents,
                              size_t ulNewLength) {
-                    
+   int iStatus;
+   Node_T oNFound = NULL;
+
+   assert(pcPath != NULL);
+
+   iStatus = FT_findNode(pcPath, &oNFound);
+   if (iStatus != SUCCESS) {
+      return NULL;
+   }
+   return Node_setContents(oNFound, pvNewContents, ulNewLength);           
 }
 
 int FT_stat(const char *pcPath, boolean *pbIsFile, size_t *pulSize) {
+   int iStatus;
+   Node_T oNFound = NULL;
 
+   assert(pcPath != NULL);
+   assert(pbIsFile != NULL);
+   assert(pulSize != NULL);
+
+   if (!bIsInitialized) {
+      return INITIALIZATION_ERROR;
+   }
+   iStatus = Path_new(pcPath, &oNFound);
+   if (iStatus != SUCCESS) {
+      return iStatus;
+   }
+   if (Node_isFile(oNFound)){
+      *pbIsFile = TRUE;
+      *pulSize = Node_getFileSize(oNFound);
+   }
+   else{
+      *pbIsFile = FALSE;
+   }
+   return SUCCESS;
 }
 
 int FT_init(void) {
+   if (bIsInitialized)
+        return INITIALIZATION_ERROR;
 
+   bIsInitialized = TRUE;
+   oNRoot =  NULL;
+   ulCount = 0;
+   assert(CheckerFT_isValid(bIsInitialized, oNRoot, ulCount));
+   return SUCESS;
 }
+
 
 int FT_destroy(void) {
+   assert(CheckerFT_isValid(bIsInitialized, oNRoot, ulCount));
 
+   if (!bIsInitialized)
+        return INITIALIZATION_ERROR;
+   if (oNRoot){
+      ulCount -= Node_free(oNRoot);
+   }
+   oNRoot = NULL;
+   bIsInitialized = FALSE;
+   return SUCESS;
 }
 
+
+/*
+  Returns a string representation of the
+  data structure, or NULL if the structure is
+  not initialized or there is an allocation error.
+
+  The representation is depth-first with files
+  before directories at any given level, and nodes
+  of the same type ordered lexicographically.
+
+  Allocates memory for the returned string,
+  which is then owned by client!
+*/
 char *FT_toString(void) {
 
 }
