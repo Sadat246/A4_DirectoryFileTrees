@@ -12,7 +12,6 @@
 #include "dynarray.h"
 #include "path.h"
 #include "nodeFT.h"
-#include "checkerDT.h"
 #include "dt.h"
 #include "a4def.h"
 
