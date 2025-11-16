@@ -428,7 +428,7 @@ int FT_stat(const char *pcPath, boolean *pbIsFile, size_t *pulSize) {
    if (!bIsInitialized) {
       return INITIALIZATION_ERROR;
    }
-   iStatus = Path_new(pcPath, &oNFound);
+   iStatus = FT_findNode(pcPath, &oNFound);
    if (iStatus != SUCCESS) {
       return iStatus;
    }
