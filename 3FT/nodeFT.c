@@ -57,7 +57,8 @@ static int Node_compareString(const Node_T oNFirst,
    return Path_compareString(oNFirst->oPPath, pcSecond);
 }
 
-int Node_new(Path_T oPPath, Node_T oNParent, Node_T *poNResult) {
+int Node_new(Path_T oPPath, Node_T oNParent, Node_T *poNResult, 
+   boolean isFile, void *contents, size_t size) {
    struct node *psNew;
    Path_T oPParentPath = NULL;
    Path_T oPNewPath = NULL;
@@ -83,6 +84,10 @@ int Node_new(Path_T oPPath, Node_T oNParent, Node_T *poNResult) {
       return iStatus;
    }
    psNew->oPPath = oPNewPath;
+
+   psNew->isFile = isFile;
+   psNew->contents = contents;
+   psNew->size = size
 
    /* validate and set the new node's parent */
    if(oNParent != NULL) {
