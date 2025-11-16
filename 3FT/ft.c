@@ -321,41 +321,48 @@ if (oNCurr == NULL) {
    }
 
    /* starting at oNCurr, build rest of the path one level at a time */
- while (ulIndex <= ulDepth) {
+   while(ulIndex <= ulDepth) {
       Path_T oPPrefix = NULL;
       Node_T oNNewNode = NULL;
-      boolean bIsFileLevel;
+      boolean isFileLevel;
       void *pvNodeContents;
       size_t ulNodeSize;
 
       /* generate a Path_T for this level */
       iStatus = Path_prefix(oPPath, ulIndex, &oPPrefix);
-      if (iStatus != SUCCESS) {
+      if(iStatus != SUCCESS) {
          Path_free(oPPath);
-         if (oNFirstNew != NULL)
-            (void)Node_free(oNFirstNew);
+         if(oNFirstNew != NULL)
+            (void) Node_free(oNFirstNew);
          return iStatus;
       }
 
       /* only the last component is a file; prefixes are directories */
-      bIsFileLevel   = (ulIndex == ulDepth);
-      pvNodeContents = bIsFileLevel ? pvContents : NULL;
-      ulNodeSize     = bIsFileLevel ? ulLength   : 0;
+      if(ulIndex == ulDepth) {
+         isFileLevel = TRUE;
+         pvNodeContents = pvContents;
+         ulNodeSize = ulLength;
+      }
+      else {
+         isFileLevel = FALSE;
+         pvNodeContents = NULL;
+         ulNodeSize = 0;
+      }
 
       /* insert the new node for this level */
       iStatus = Node_new(oPPrefix, oNCurr, &oNNewNode,
-                         bIsFileLevel, pvNodeContents, ulNodeSize);
+                         isFileLevel, pvNodeContents, ulNodeSize);
       Path_free(oPPrefix);
 
-      if (iStatus != SUCCESS) {
+      if(iStatus != SUCCESS) {
          Path_free(oPPath);
-         if (oNFirstNew != NULL)
-            (void)Node_free(oNFirstNew);
+         if(oNFirstNew != NULL)
+            (void) Node_free(oNFirstNew);
          return iStatus;
       }
 
       /* set up for next level */
-      if (oNFirstNew == NULL)
+      if(oNFirstNew == NULL)
          oNFirstNew = oNNewNode;
       oNCurr = oNNewNode;
       ulNewNodes++;
