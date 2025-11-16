@@ -273,116 +273,98 @@ int FT_rmDir(const char *pcPath) {
    return SUCCESS;
 }
 
-int FT_insertFile(const char *pcPath, void *pvContents,
-                  size_t ulLength) {
-   int iStatus;
-   Path_T oPPath = NULL;
-   Node_T oNFirstNew = NULL;
-   Node_T oNCurr = NULL;
-   size_t ulDepth, ulIndex;
-   size_t ulNewNodes = 0;
+int FT_insertFile(const char *pcPath, void *pvContents, size_t ulLength) {
+    int iStatus;
+    Path_T oPPath = NULL;
+    Node_T oNFirstNew = NULL;
+    Node_T oNCurr = NULL;
+    size_t ulDepth, ulIndex;
+    size_t ulNewNodes = 0;
 
-   assert(pcPath != NULL);
+    assert(pcPath != NULL);
 
-   /* validate pcPath and generate a Path_T for it */
-   if(!bIsInitialized)
-      return INITIALIZATION_ERROR;
+    if (!bIsInitialized)
+        return INITIALIZATION_ERROR;
 
-   iStatus = Path_new(pcPath, &oPPath);
-   if(iStatus != SUCCESS)
-      return iStatus;
+    iStatus = Path_new(pcPath, &oPPath);
+    if (iStatus != SUCCESS)
+        return iStatus;
 
-   /* find the closest ancestor of oPPath already in the tree */
-   iStatus= FT_traversePath(oPPath, &oNCurr);
-   if(iStatus != SUCCESS) {
-      Path_free(oPPath);
-      return iStatus;
-   }
-
-   /* no ancestor node found, so if root is not NULL,
-      pcPath isn't underneath root. */
-   /*if(oNCurr == NULL && (oNRoot != NULL || oNCurr == NULL)) {
-      Path_free(oPPath);
-      return CONFLICTING_PATH;
-   }*/
-   if (oNRoot == NULL) {
-    /* inserting first-ever node: must be depth 1 */
-    if (Path_getDepth(oPPath) != 1) {
+    /* find deepest existing prefix */
+    iStatus = FT_traversePath(oPPath, &oNCurr);
+    if (iStatus != SUCCESS) {
         Path_free(oPPath);
-        return CONFLICTING_PATH;
+        return iStatus;
     }
-   } 
-   else {
-    /* tree exists: oNCurr MUST NOT be NULL */
+
+    ulDepth = Path_getDepth(oPPath);
+
     if (oNCurr == NULL) {
-        Path_free(oPPath);
-        return CONFLICTING_PATH;
+        /* new root must be at depth 1 */
+        if (oNRoot != NULL) {
+            Path_free(oPPath);
+            return CONFLICTING_PATH;
+        }
+        ulIndex = 1;
     }
-   }
+    else {
+        /* prevent adding child to a file */
+        if (Node_isFile(oNCurr)) {
+            Path_free(oPPath);
+            return NOT_A_DIRECTORY;
+        }
 
+        ulIndex = Path_getDepth(Node_getPath(oNCurr)) + 1;
 
-   ulDepth = Path_getDepth(oPPath);
-   ulIndex = Path_getDepth(Node_getPath(oNCurr))+1;
-
-   /* oNCurr is the node we're trying to insert */
-   if(ulIndex == ulDepth+1 && !Path_comparePath(oPPath,
-                                    Node_getPath(oNCurr))) {
-      Path_free(oPPath); /* Clean up path object as it's no longer needed */
-      return ALREADY_IN_TREE;
-   }
-
-   /* starting at oNCurr, build rest of the path one level at a time */
-   while (ulIndex <= ulDepth) {
-    Path_T oPPrefix = NULL;
-    Node_T oNNewNode = NULL;
-
-    iStatus = Path_prefix(oPPath, ulIndex, &oPPrefix);
-    if (iStatus != SUCCESS) {
-        Path_free(oPPath);
-        if (oNFirstNew != NULL) Node_free(oNFirstNew);
-        return iStatus;
+        /* already exists */
+        if (ulIndex == ulDepth + 1 &&
+            Path_comparePath(Node_getPath(oNCurr), oPPath) == 0) {
+            Path_free(oPPath);
+            return ALREADY_IN_TREE;
+        }
     }
 
-    /* P A T C H — never insert a child under a file */
-    if (oNCurr != NULL && Node_isFile(oNCurr)) {
-        Path_free(oPPath);
+    /* build missing nodes */
+    while (ulIndex <= ulDepth) {
+        Path_T oPPrefix = NULL;
+        Node_T oNNewNode = NULL;
+
+        iStatus = Path_prefix(oPPath, ulIndex, &oPPrefix);
+        if (iStatus != SUCCESS) {
+            Path_free(oPPath);
+            if (oNFirstNew != NULL) Node_free(oNFirstNew);
+            return iStatus;
+        }
+
+        boolean isFile = (ulIndex == ulDepth);
+
+        iStatus = Node_new(oPPrefix, oNCurr, &oNNewNode,
+                           isFile,
+                           isFile ? pvContents : NULL,
+                           isFile ? ulLength : 0);
+
         Path_free(oPPrefix);
-        if (oNFirstNew != NULL) Node_free(oNFirstNew);
-        return NOT_A_DIRECTORY;
+
+        if (iStatus != SUCCESS) {
+            Path_free(oPPath);
+            if (oNFirstNew != NULL) Node_free(oNFirstNew);
+            return iStatus;
+        }
+
+        if (oNFirstNew == NULL) oNFirstNew = oNNewNode;
+
+        oNCurr = oNNewNode;
+        ulNewNodes++;
+        ulIndex++;
     }
 
-    /* P A T C H — only final level is a file */
-    boolean makeFile = (ulIndex == ulDepth);
+    if (oNRoot == NULL)
+        oNRoot = oNFirstNew;
 
-    iStatus = Node_new(
-        oPPrefix,
-        oNCurr,
-        &oNNewNode,
-        makeFile,
-        makeFile ? pvContents : NULL,
-        makeFile ? ulLength   : 0
-    );
+    ulCount += ulNewNodes;
+    Path_free(oPPath);
 
-    Path_free(oPPrefix);
-
-    if (iStatus != SUCCESS) {
-        Path_free(oPPath);
-        if (oNFirstNew != NULL) Node_free(oNFirstNew);
-        return iStatus;
-    }
-
-    if (oNFirstNew == NULL) oNFirstNew = oNNewNode;
-    oNCurr = oNNewNode;
-    ulNewNodes++;
-    ulIndex++;
-}
-
-
-   if (oNRoot == NULL) oNRoot = oNFirstNew;
-   ulCount += ulNewNodes;
-   Path_free(oPPath);
-
-   return SUCCESS;
+    return SUCCESS;
 }
 
 boolean FT_containsFile(const char *pcPath) {
