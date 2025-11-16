@@ -325,6 +325,7 @@ int FT_insertFile(const char *pcPath, void *pvContents,
       iStatus = Path_prefix(oPPath, ulIndex, &oPPrefix);
       if(iStatus != SUCCESS) {
          Path_free(oPPath);
+         if (oPPrefix != NULL) Path_free(oPPrefix);
          if(oNFirstNew != NULL)
             (void) Node_free(oNFirstNew);
          return iStatus;
@@ -332,28 +333,23 @@ int FT_insertFile(const char *pcPath, void *pvContents,
 
       /* insert the new node for this level */
       iStatus = Node_new(oPPrefix, oNCurr, &oNNewNode, TRUE, pvContents, ulLength);
+      Path_free(oPPrefix);
       if(iStatus != SUCCESS) {
          Path_free(oPPath);
-         Path_free(oPPrefix);
          if(oNFirstNew != NULL)
             (void) Node_free(oNFirstNew);
          return iStatus;
       }
 
       /* set up for next level */
-      Path_free(oPPrefix);
+      if (oNFirstNew == NULL) oNFirstNew = oNNewNode;
       oNCurr = oNNewNode;
       ulNewNodes++;
-      if(oNFirstNew == NULL)
-         oNFirstNew = oNCurr;
       ulIndex++;
    }
-
-   Path_free(oPPath);
-   /* update DT state variables to reflect insertion */
-   if(oNRoot == NULL)
-      oNRoot = oNFirstNew;
+   if (oNRoot == NULL) oNRoot = oNFirstNew;
    ulCount += ulNewNodes;
+   Path_free(oPPath);
 
    return SUCCESS;
 }
