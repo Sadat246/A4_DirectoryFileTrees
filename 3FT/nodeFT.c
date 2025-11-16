@@ -87,7 +87,7 @@ int Node_new(Path_T oPPath, Node_T oNParent, Node_T *poNResult,
 
    psNew->isFile = isFile;
    psNew->contents = contents;
-   psNew->size = size
+   psNew->size = size;
 
    /* validate and set the new node's parent */
    if(oNParent != NULL) {
