@@ -299,15 +299,15 @@ int FT_insertFile(const char *pcPath, void *pvContents,
       return iStatus;
    }
 
- if (oNRoot == NULL) { 
-   Path_free(oPPath); 
-   return CONFLICTING_PATH;
-} 
+   if (oNRoot == NULL) { 
+      Path_free(oPPath); 
+      return CONFLICTING_PATH;
+   } 
    
-if (oNCurr == NULL) { 
-   Path_free(oPPath); 
-   return CONFLICTING_PATH;
-}
+   if (oNCurr == NULL) { 
+      Path_free(oPPath); 
+      return CONFLICTING_PATH;
+   }
 
 
    ulDepth = Path_getDepth(oPPath);
@@ -361,13 +361,15 @@ if (oNCurr == NULL) {
          return iStatus;
       }
 
-      /* set up for next level */
-      if(oNFirstNew == NULL)
+      if(oNFirstNew == NULL) {
          oNFirstNew = oNNewNode;
+      }
+
       oNCurr = oNNewNode;
       ulNewNodes++;
       ulIndex++;
    }
+
    if (oNRoot == NULL) oNRoot = oNFirstNew;
    ulCount += ulNewNodes;
    Path_free(oPPath);
