@@ -343,22 +343,24 @@ int FT_insertFile(const char *pcPath, void *pvContents,
         return iStatus;
     }
 
-    /* For all prefixes EXCEPT the last → directory */
-    boolean makeFile = (ulIndex == ulDepth);   
+    /* P A T C H — never insert a child under a file */
+    if (oNCurr != NULL && Node_isFile(oNCurr)) {
+        Path_free(oPPath);
+        Path_free(oPPrefix);
+        if (oNFirstNew != NULL) Node_free(oNFirstNew);
+        return NOT_A_DIRECTORY;
+    }
 
-   /* BUT: if oNCurr already matches this prefix, DO NOT recreate it,
-      AND do NOT make a directory into a file. */
-   if (oNCurr != NULL && Path_comparePath(Node_getPath(oNCurr), oPPrefix) == 0) {
-      makeFile = FALSE;   
-   }
+    /* P A T C H — only final level is a file */
+    boolean makeFile = (ulIndex == ulDepth);
 
     iStatus = Node_new(
         oPPrefix,
         oNCurr,
         &oNNewNode,
-        makeFile,                                
+        makeFile,
         makeFile ? pvContents : NULL,
-        makeFile ? ulLength : 0
+        makeFile ? ulLength   : 0
     );
 
     Path_free(oPPrefix);
@@ -373,7 +375,8 @@ int FT_insertFile(const char *pcPath, void *pvContents,
     oNCurr = oNNewNode;
     ulNewNodes++;
     ulIndex++;
-   }
+}
+
 
    if (oNRoot == NULL) oNRoot = oNFirstNew;
    ulCount += ulNewNodes;
