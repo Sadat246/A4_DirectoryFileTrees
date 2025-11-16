@@ -16,7 +16,7 @@
 #include "a4def.h"
 
 /*
-  A Directory Tree is a representation of a hierarchy of directories,
+  A File Tree is a representation of a hierarchy of directories and files,
   represented as an AO with 3 state variables:
 */
 
@@ -299,25 +299,14 @@ int FT_insertFile(const char *pcPath, void *pvContents,
       return iStatus;
    }
 
-   /* no ancestor node found, so if root is not NULL,
-      pcPath isn't underneath root. */
-   /*if(oNCurr == NULL && (oNRoot != NULL || oNCurr == NULL)) {
-      Path_free(oPPath);
-      return CONFLICTING_PATH;
-   }*/
-   if (oNRoot == NULL) {
-    /* inserting first-ever node: must be depth 1 */
-    if (Path_getDepth(oPPath) != 1) {
-        Path_free(oPPath);
-        return CONFLICTING_PATH;
-    }
+ if (oNRoot == NULL) { 
+   Path_free(oPPath); 
+   return CONFLICTING_PATH;
 } 
-else {
-    /* tree exists: oNCurr MUST NOT be NULL */
-    if (oNCurr == NULL) {
-        Path_free(oPPath);
-        return CONFLICTING_PATH;
-    }
+   
+if (oNCurr == NULL) { 
+   Path_free(oPPath); 
+   return CONFLICTING_PATH;
 }
 
 
