@@ -311,14 +311,14 @@ int FT_insertFile(const char *pcPath, void *pvContents,
         Path_free(oPPath);
         return CONFLICTING_PATH;
     }
-} 
-else {
+   } 
+   else {
     /* tree exists: oNCurr MUST NOT be NULL */
     if (oNCurr == NULL) {
         Path_free(oPPath);
         return CONFLICTING_PATH;
     }
-}
+   }
 
 
    ulDepth = Path_getDepth(oPPath);
@@ -344,7 +344,13 @@ else {
     }
 
     /* For all prefixes EXCEPT the last → directory */
-    boolean makeFile = (ulIndex == ulDepth);
+    boolean makeFile = (ulIndex == ulDepth);   // file only at final level
+
+   /* BUT: if oNCurr already matches this prefix, DO NOT recreate it,
+      AND do NOT make a directory into a file. */
+   if (oNCurr != NULL && Path_comparePath(Node_getPath(oNCurr), oPPrefix) == 0) {
+      makeFile = FALSE;   // MUST NOT change an existing directory into a file
+   }
 
     iStatus = Node_new(
         oPPrefix,
@@ -367,7 +373,7 @@ else {
     oNCurr = oNNewNode;
     ulNewNodes++;
     ulIndex++;
-}
+   }
 
    if (oNRoot == NULL) oNRoot = oNFirstNew;
    ulCount += ulNewNodes;
