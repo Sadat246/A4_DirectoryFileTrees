@@ -33,9 +33,9 @@ struct node {
 */
 static int Node_addChild(Node_T oNParent, Node_T oNChild,
                          size_t ulIndex) {
-   assert(!oNParent->isFile);
    assert(oNParent != NULL);
    assert(oNChild != NULL);
+   assert(!oNParent->isFile);
 
    if(DynArray_addAt(oNParent->oDChildren, ulIndex, oNChild))
       return SUCCESS;
@@ -67,7 +67,6 @@ int Node_new(Path_T oPPath, Node_T oNParent, Node_T *poNResult,
    int iStatus;
 
    assert(oPPath != NULL);
-   assert(oNParent == NULL);
 
    /* allocate space for a new node */
    psNew = malloc(sizeof(struct node));
@@ -160,8 +159,6 @@ int Node_new(Path_T oPPath, Node_T oNParent, Node_T *poNResult,
    }
 
    *poNResult = psNew;
-
-   assert(oNParent == NULL);
 
    return SUCCESS;
 }
