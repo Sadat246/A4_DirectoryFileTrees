@@ -17,7 +17,9 @@ information given in the "Policies" web page (also available on armlab
 in the file ~cos217/AuthorizedSourcesList ) to this section of the
 readme file, and edit it as appropriate.
 
-
+COS 217 lecture materials.
+COS 217 precept materials.
+COS 217 website.
 
 ------------------------------------------------------------------------
 Student 2: What authorized sources of information did you use to
@@ -26,6 +28,9 @@ information given in the "Policies" web page (also available on armlab
 in the file ~cos217/AuthorizedSourcesList ) to this section of the
 readme file, and edit it as appropriate.
 
+COS 217 lecture materials.
+COS 217 precept materials.
+COS 217 website.
 
 
 ------------------------------------------------------------------------
@@ -40,7 +45,7 @@ nature of the interaction, may additionally require the interaction
 being reported to the Committee on Discipline. Write "None" if you used
 no unauthorized sources of information.
 
-
+NONE
 
 ------------------------------------------------------------------------
 Student 2: What unauthorized sources of information did you use to
@@ -54,7 +59,7 @@ nature of the interaction, may additionally require the interaction
 being reported to the Committee on Discipline. Write "None" if you used
 no unauthorized sources of information.
 
-
+NONE
 
 ------------------------------------------------------------------------
 Student 1: In fulfillment of the requirement from section 2.4.3 of the
@@ -64,7 +69,9 @@ guide, enter your name in the space below the following affirmation:
 This paper represents my own work in accordance with University
 regulations.
 
-
+I used chatGPT to help me understand gdb and how bugs related trees may 
+manifest through gdb. However, I did not use it to generate any ideas, 
+code, or concepts directly related to the assignment.
 
 ------------------------------------------------------------------------
 Student 2: In fulfillment of the requirement from section 2.4.3 of the
@@ -74,6 +81,7 @@ guide, enter your name in the space below the following affirmation:
 This paper represents my own work in accordance with University
 regulations.
 
+Sadat Ahmed
 
 
 ------------------------------------------------------------------------
@@ -82,18 +90,21 @@ Regulations in Princeton's Rights, Rules, Responsibilities guide,
 and the COS 217 Generative AI policy, disclose and describe how you
 used AI in completing this assignment:
 
+NONE
 
 
 ------------------------------------------------------------------------
 Student 1: What is your assessment of the assignment? Was it helpful?
 Was it fun?
 
-
+Yes, it was a very involved assignment that helped us understand how to
+debug code using gdb. Assignment felt very practical, but quite tedious.
 
 ------------------------------------------------------------------------
 Student 2: What is your assessment of the assignment? Was it helpful?
 Was it fun?
 
+Yes, it was helpful and fun.
 
 
 ------------------------------------------------------------------------
