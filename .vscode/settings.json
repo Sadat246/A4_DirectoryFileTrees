@@ -1,5 +1,7 @@
 {
     "files.associations": {
-        "nodedt.h": "c"
+        "nodedt.h": "c",
+        "assert.h": "c",
+        "string.h": "c"
     }
 }
