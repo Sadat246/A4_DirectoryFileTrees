@@ -350,7 +350,7 @@ else {
         oPPrefix,
         oNCurr,
         &oNNewNode,
-        makeFile,                               // only last one is file
+        makeFile,                                
         makeFile ? pvContents : NULL,
         makeFile ? ulLength : 0
     );
