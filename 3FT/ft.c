@@ -301,10 +301,25 @@ int FT_insertFile(const char *pcPath, void *pvContents,
 
    /* no ancestor node found, so if root is not NULL,
       pcPath isn't underneath root. */
-   if(oNCurr == NULL && (oNRoot != NULL || oNCurr == NULL)) {
+   /*if(oNCurr == NULL && (oNRoot != NULL || oNCurr == NULL)) {
       Path_free(oPPath);
       return CONFLICTING_PATH;
-   }
+   }*/
+   if (oNRoot == NULL) {
+    /* inserting first-ever node: must be depth 1 */
+    if (Path_getDepth(oPPath) != 1) {
+        Path_free(oPPath);
+        return CONFLICTING_PATH;
+    }
+} 
+else {
+    /* tree exists: oNCurr MUST NOT be NULL */
+    if (oNCurr == NULL) {
+        Path_free(oPPath);
+        return CONFLICTING_PATH;
+    }
+}
+
 
    ulDepth = Path_getDepth(oPPath);
    ulIndex = Path_getDepth(Node_getPath(oNCurr))+1;
