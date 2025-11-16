@@ -332,36 +332,43 @@ else {
    }
 
    /* starting at oNCurr, build rest of the path one level at a time */
-   while(ulIndex <= ulDepth) {
-      Path_T oPPrefix = NULL;
-      Node_T oNNewNode = NULL;
+   while (ulIndex <= ulDepth) {
+    Path_T oPPrefix = NULL;
+    Node_T oNNewNode = NULL;
 
-      /* generate a Path_T for this level */
-      iStatus = Path_prefix(oPPath, ulIndex, &oPPrefix);
-      if(iStatus != SUCCESS) {
-         Path_free(oPPath);
-         if (oPPrefix != NULL) Path_free(oPPrefix);
-         if(oNFirstNew != NULL)
-            (void) Node_free(oNFirstNew);
-         return iStatus;
-      }
+    iStatus = Path_prefix(oPPath, ulIndex, &oPPrefix);
+    if (iStatus != SUCCESS) {
+        Path_free(oPPath);
+        if (oNFirstNew != NULL) Node_free(oNFirstNew);
+        return iStatus;
+    }
 
-      /* insert the new node for this level */
-      iStatus = Node_new(oPPrefix, oNCurr, &oNNewNode, TRUE, pvContents, ulLength);
-      Path_free(oPPrefix);
-      if(iStatus != SUCCESS) {
-         Path_free(oPPath);
-         if(oNFirstNew != NULL)
-            (void) Node_free(oNFirstNew);
-         return iStatus;
-      }
+    /* For all prefixes EXCEPT the last → directory */
+    boolean makeFile = (ulIndex == ulDepth);
 
-      /* set up for next level */
-      if (oNFirstNew == NULL) oNFirstNew = oNNewNode;
-      oNCurr = oNNewNode;
-      ulNewNodes++;
-      ulIndex++;
-   }
+    iStatus = Node_new(
+        oPPrefix,
+        oNCurr,
+        &oNNewNode,
+        makeFile,                               // only last one is file
+        makeFile ? pvContents : NULL,
+        makeFile ? ulLength : 0
+    );
+
+    Path_free(oPPrefix);
+
+    if (iStatus != SUCCESS) {
+        Path_free(oPPath);
+        if (oNFirstNew != NULL) Node_free(oNFirstNew);
+        return iStatus;
+    }
+
+    if (oNFirstNew == NULL) oNFirstNew = oNNewNode;
+    oNCurr = oNNewNode;
+    ulNewNodes++;
+    ulIndex++;
+}
+
    if (oNRoot == NULL) oNRoot = oNFirstNew;
    ulCount += ulNewNodes;
    Path_free(oPPath);
