@@ -344,12 +344,12 @@ int FT_insertFile(const char *pcPath, void *pvContents,
     }
 
     /* For all prefixes EXCEPT the last → directory */
-    boolean makeFile = (ulIndex == ulDepth);   // file only at final level
+    boolean makeFile = (ulIndex == ulDepth);   
 
    /* BUT: if oNCurr already matches this prefix, DO NOT recreate it,
       AND do NOT make a directory into a file. */
    if (oNCurr != NULL && Path_comparePath(Node_getPath(oNCurr), oPPrefix) == 0) {
-      makeFile = FALSE;   // MUST NOT change an existing directory into a file
+      makeFile = FALSE;   
    }
 
     iStatus = Node_new(
