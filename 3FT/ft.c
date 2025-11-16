@@ -263,7 +263,7 @@ int FT_rmDir(const char *pcPath) {
    assert(pcPath != NULL);
    assert(CheckerDT_isValid(bIsInitialized, oNRoot, ulCount));
 
-   iStatus = DT_findNode(pcPath, &oNFound);
+   iStatus = FT_findNode(pcPath, &oNFound);
 
    if(iStatus != SUCCESS) return iStatus;
 
@@ -308,7 +308,7 @@ int FT_insertFile(const char *pcPath, void *pvContents,
 
    /* no ancestor node found, so if root is not NULL,
       pcPath isn't underneath root. */
-   if(oNCurr == NULL && oNRoot != NULL || oNCurr == NULL) {
+   if(oNCurr == NULL && (oNRoot != NULL || oNCurr == NULL)) {
       Path_free(oPPath);
       return CONFLICTING_PATH;
    }
@@ -385,7 +385,7 @@ int FT_rmFile(const char *pcPath) {
    assert(pcPath != NULL);
    assert(CheckerDT_isValid(bIsInitialized, oNRoot, ulCount));
 
-   iStatus = DT_findNode(pcPath, &oNFound);
+   iStatus = FT_findNode(pcPath, &oNFound);
 
    if(iStatus != SUCCESS) return iStatus;
 
@@ -446,7 +446,7 @@ int FT_stat(const char *pcPath, boolean *pbIsFile, size_t *pulSize) {
    }
    if (Node_isFile(oNFound)){
       *pbIsFile = TRUE;
-      *pulSize = Node_getFileSize(oNFound);
+      *pulSize = Node_getSize(oNFound);
    }
    else{
       *pbIsFile = FALSE;
@@ -518,7 +518,7 @@ static size_t FT_preOrderTraversal(Node_T n, DynArray_T d, size_t i) {
   to accumulate a string length, rather than returning the length of
   oNNode's path, and also always adds one addition byte to the sum.
 */
-static void DT_strlenAccumulate(Node_T oNNode, size_t *pulAcc) {
+static void FT_strlenAccumulate(Node_T oNNode, size_t *pulAcc) {
    assert(pulAcc != NULL);
 
    if(oNNode != NULL)
@@ -530,7 +530,7 @@ static void DT_strlenAccumulate(Node_T oNNode, size_t *pulAcc) {
   order, appending oNNode's path onto pcAcc, and also always adds one
   newline at the end of the concatenated string.
 */
-static void DT_strcatAccumulate(Node_T oNNode, char *pcAcc) {
+static void FT_strcatAccumulate(Node_T oNNode, char *pcAcc) {
    assert(pcAcc != NULL);
 
    if(oNNode != NULL) {
@@ -563,7 +563,7 @@ char *FT_toString(void) {
    nodes = DynArray_new(ulCount);
    (void) FT_preOrderTraversal(oNRoot, nodes, 0);
 
-   DynArray_map(nodes, (void (*)(void *, void*)) DT_strlenAccumulate,
+   DynArray_map(nodes, (void (*)(void *, void*)) FT_strlenAccumulate,
                 (void*) &totalStrlen);
 
    result = malloc(totalStrlen);
@@ -573,7 +573,7 @@ char *FT_toString(void) {
    }
    *result = '\0';
 
-   DynArray_map(nodes, (void (*)(void *, void*)) DT_strcatAccumulate,
+   DynArray_map(nodes, (void (*)(void *, void*)) FT_strcatAccumulate,
                 (void *) result);
 
    DynArray_free(nodes);
