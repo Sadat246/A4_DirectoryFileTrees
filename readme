@@ -155,6 +155,16 @@ We intentionally do not assert that these pointers are non-NULL,
 because a file in the FT may have NULL contents to represent an 
 empty file.
 
+   nodeFT.c: line 61: medium priority:
+   Do you want to validate 'contents' through an assert?
+
+   nodeFT.c: line 268: medium priority:
+   Do you want to validate 'newContents' through an assert?
+
+We intentionally do not assert that these pointers are non-NULL,
+because a file in the FT may have NULL contents to represent an 
+empty file.
+
 ------------------------------------------------------------------------
 For each of the five faulty BDT implementations required by Step
 1.5, identify the function where there is a bug. You do not have to
