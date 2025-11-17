@@ -137,7 +137,19 @@ your disagreements with them? Copy the splint warnings here, and
 express your disagreement after each warning. If there are no
 warnings, then write "None."
 
+path.h:94:13: Function exported but not used outside path: Path_getComponent
+  A declaration is exported, but not used outside this module. Declaration can
+  use static qualifier. (Use -exportlocal to inhibit warning)
+   path.c:316:1: Definition of Path_getComponent
 
+As per assignment specifications we do not modify this module.
+
+nodeFT.h:109:5: Function exported but not used outside nodeFT: Node_compare
+   nodeFT.c:289:1: Definition of Node_compare
+
+We kept Node_compare in nodeFT.h to preserve a similar interface to the 
+Part 2 Node module. Since this does not affect correctness, 
+we left the function.
 
 ------------------------------------------------------------------------
 What warnings does critTer generate on your Part 3 code, and what are
