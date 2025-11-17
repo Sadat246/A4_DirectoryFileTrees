@@ -215,7 +215,7 @@ NULL.
 - There are instances in both files where memory is freed, but not set 
 to NULL. 
 - The documentation for functions through comments should not be duplicated 
-in the `.h` and `.c` files. 
+in the .h and .c files. 
 
 
 ------------------------------------------------------------------------

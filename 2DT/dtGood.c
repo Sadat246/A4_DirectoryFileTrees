@@ -206,7 +206,7 @@ int DT_insert(const char *pcPath) {
    else {
       ulIndex = Path_getDepth(Node_getPath(oNCurr))+1;
 
-      /* oNCurr is the node we're trying to insert */
+   /* oNCurr is the node we're trying to insert */
       if(ulIndex == ulDepth+1 && !Path_comparePath(oPPath,
                                        Node_getPath(oNCurr))) {
          Path_free(oPPath);

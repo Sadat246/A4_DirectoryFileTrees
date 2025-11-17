@@ -337,7 +337,7 @@ int FT_insertFile(const char *pcPath, void *pvContents,
          return iStatus;
       }
 
-      /* only the last component is a file; prefixes are directories */
+      /* only the last node is a file*/
       if(ulIndex == ulDepth) {
          isFileLevel = TRUE;
          pvNodeContents = pvContents;
