@@ -202,6 +202,20 @@ the error manifests itself or is "noticed" by the client.
 What are your critiques of the given DT implementations, as
 specified in Step 2.5?
 
+- It is redundant to have include <stddef.h> in both "nodeDTGood.c"
+and "dt.h" and removing this would clean up the code. 
+- "DT_preorderTransversal()" has bad parameter naming. The parameters 
+are called Node_T n, DynArray_T d, size_t i. So is the variable, size_t
+c variable. I think it would be very beneficial to rename the variables 
+to have more descriptive names, more reflective of their purpose. 
+- It would be helpful to put the states of DT into a struct in dtGood.c
+in terms of encapsulation.
+- "DT_toString" does not handle the case where "DynArray_new()" returns
+NULL.
+- There are instances in both files where memory is freed, but not set 
+to NULL. 
+- The documentation for functions through comments should not be duplicated 
+in the `.h` and `.c` files. 
 
 
 ------------------------------------------------------------------------
