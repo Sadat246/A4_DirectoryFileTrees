@@ -191,7 +191,7 @@ boolean CheckerDT_isValid(boolean bIsInitialized, Node_T oNRoot,
    }
     if (dirCount != ulCount) {
       fprintf(stderr,"Node count is not equal to ulCount\n");
-      return FAL
+      return FALSE;
    }
    return TRUE;
 }
