@@ -1,6 +1,7 @@
+
 /*--------------------------------------------------------------------*/
 /* checkerDT.c                                                        */
-/* Author: Aditya Prajapati and Sadat Ahmed                           */
+/* Author:                                                            */
 /*--------------------------------------------------------------------*/
 
 #include <assert.h>
@@ -99,13 +100,12 @@ boolean CheckerDT_Node_isValid(Node_T oNNode) {
    parameter list to facilitate constructing your checks.
    If you do, you should update this function comment.
 */
-static boolean CheckerDT_treeCheck(Node_T oNNode, size_t *nodeCount) {
+static boolean CheckerDT_treeCheck(Node_T oNNode) {
    size_t ulIndex, ulIndex2, ulIndex3,ulIndex4;
    Node_T childPrev;
    Node_T childCurr;
 
    if(oNNode != NULL) {
-      (*nodeCount)++;
 
 
       /* Sample check on each node: node must be valid */
@@ -154,9 +154,10 @@ static boolean CheckerDT_treeCheck(Node_T oNNode, size_t *nodeCount) {
 
          /* if recurring down one subtree results in a failed check
             farther down, passes the failure back up immediately */
-         if(!CheckerDT_treeCheck(oNChild, nodeCount))
+         if(!CheckerDT_treeCheck(oNChild))
             return FALSE;
       }
+
    }
    return TRUE;
 }
@@ -185,7 +186,7 @@ boolean CheckerDT_isValid(boolean bIsInitialized, Node_T oNRoot,
    }
 
    /* Now checks invariants recursively at each node from the root. */
-   if (!CheckerDT_treeCheck(oNRoot, &nodeCount)){
+   if (!CheckerDT_treeCheck(oNRoot)){
       return FALSE;
    }
     if (nodeCount != ulCount) {
