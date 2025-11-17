@@ -105,6 +105,7 @@ static boolean CheckerDT_treeCheck(Node_T oNNode, size_t *nodeCount) {
    Node_T childCurr;
 
    if(oNNode != NULL) {
+      *nodeCount++;
 
 
       /* Sample check on each node: node must be valid */
@@ -156,7 +157,6 @@ static boolean CheckerDT_treeCheck(Node_T oNNode, size_t *nodeCount) {
          if(!CheckerDT_treeCheck(oNChild, nodeCount))
             return FALSE;
       }
-      *nodeCount++;
    }
    return TRUE;
 }
