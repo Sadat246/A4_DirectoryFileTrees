@@ -88,9 +88,11 @@ Regulations in Princeton's Rights, Rules, Responsibilities guide,
 and the COS 217 Generative AI policy, disclose and describe how you
 used AI in completing this assignment:
 
-I used chatGPT to help me understand gdb and how bugs related trees may 
-manifest through gdb. However, I did not use it to generate any ideas, 
-code, or concepts directly related to the assignment.
+I used AI to help me understand gdb and how bugs related trees may 
+manifest through gdb. In addition, I used AI to understand the current 
+invariants and how they may manifest for files instead of directories.
+However, I did not use it to generate any ideas, code, or concepts 
+directly related to completing the assignment.
 
 ------------------------------------------------------------------------
 Student 1: What is your assessment of the assignment? Was it helpful?
