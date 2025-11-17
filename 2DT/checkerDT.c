@@ -1,7 +1,6 @@
-
 /*--------------------------------------------------------------------*/
 /* checkerDT.c                                                        */
-/* Author:                                                            */
+/* Author: Aditya Prajapati and Sadat Ahmed                           */
 /*--------------------------------------------------------------------*/
 
 #include <assert.h>
@@ -100,7 +99,7 @@ boolean CheckerDT_Node_isValid(Node_T oNNode) {
    parameter list to facilitate constructing your checks.
    If you do, you should update this function comment.
 */
-static boolean CheckerDT_treeCheck(Node_T oNNode) {
+static boolean CheckerDT_treeCheck(Node_T oNNode, size_t *dirCount) {
    size_t ulIndex, ulIndex2, ulIndex3,ulIndex4;
    Node_T childPrev;
    Node_T childCurr;
@@ -154,10 +153,11 @@ static boolean CheckerDT_treeCheck(Node_T oNNode) {
 
          /* if recurring down one subtree results in a failed check
             farther down, passes the failure back up immediately */
-         if(!CheckerDT_treeCheck(oNChild))
+         if(!CheckerDT_treeCheck(oNChild, dirCount))
             return FALSE;
       }
 
+      (*dirCount)++;
    }
    return TRUE;
 }
@@ -165,7 +165,7 @@ static boolean CheckerDT_treeCheck(Node_T oNNode) {
 /* see checkerDT.h for specification */
 boolean CheckerDT_isValid(boolean bIsInitialized, Node_T oNRoot,
                           size_t ulCount) {
-   size_t nodeCount = 0;
+   size_t dirCount = 0;
 
    /* Sample check on a top-level data structure invariant:
       if the DT is not initialized, its count should be 0. */
@@ -186,12 +186,12 @@ boolean CheckerDT_isValid(boolean bIsInitialized, Node_T oNRoot,
    }
 
    /* Now checks invariants recursively at each node from the root. */
-   if (!CheckerDT_treeCheck(oNRoot)){
+   if (!CheckerDT_treeCheck(oNRoot, &dirCount)){
       return FALSE;
    }
-    if (nodeCount != ulCount) {
+    if (dirCount != ulCount) {
       fprintf(stderr,"Node count is not equal to ulCount\n");
-      return FALSE;
+      return FAL
    }
    return TRUE;
 }
