@@ -17,7 +17,14 @@ typedef struct node *Node_T;
 /*
   Creates a new node in the Directory Tree, with path oPPath and
   parent oNParent. Returns an int SUCCESS status and sets *poNResult
-  to be the new node if successful. Otherwise, sets *poNResult to NULL
+  to be the new node if successful.
+  
+  If isFile is TRUE, the new node represents a file and its initial
+  contents are taken from contents, with size bytes.  If isFile is
+  FALSE, the new node represents a directory and contents is ignored
+  and size should be 0.
+
+  Otherwise, sets *poNResult to NULL
   and returns status:
   * MEMORY_ERROR if memory could not be allocated to complete request
   * CONFLICTING_PATH if oNParent's path is not an ancestor of oPPath
@@ -70,20 +77,20 @@ int Node_getChild(Node_T oNParent, size_t ulChildID,
 Node_T Node_getParent(Node_T oNNode);
 
 /* 
-    Returns TRUE if node is a file.
-    Returns FALSE if node is a directory.
+    Returns TRUE if oNNode is a file.
+    Returns FALSE if oNNode is a directory.
 */
 boolean Node_isFile(Node_T oNNode);
 
 /* 
-    Returns the size of the contents if node is a file.
-    Returns 0 if node is a directory.
+    Returns the size of the contents if oNNode is a file.
+    Returns 0 if oNNode is a directory.
 */
 size_t Node_getSize(Node_T oNNode);
 
 /*
-  Returns the contents of the file if node is a file.
-  Returns NULL if node is a directory.
+  Returns the contents of the file if oNNode is a file.
+  Returns NULL if oNNode is a directory.
 */
 void *Node_getContents(Node_T oNNode);
 
